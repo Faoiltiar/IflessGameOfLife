@@ -1,8 +1,8 @@
 package com.raczyk.gameoflife.world;
 
-import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
+import java.util.stream.Collectors;
 
 /**
  * Class representing point in the world, where cell exists.
@@ -18,11 +18,21 @@ public final class Point {
 
   /**
    * Method returning all Points that are neighbours to current point.
+   * Points can be negative (negative coordinate x and y).
+   *
    * @return List of neighbour points.
    *
    */
-  public List<Point> getNeighboursPoints() {
-    return Collections.emptyList();
+  public List<Point> getNeighbourPoints() {
+    final var neighbourDistance = 1;
+    final var coordinatesX = List.of(coordinateX - neighbourDistance, coordinateX,
+        coordinateX + neighbourDistance);
+    final var coordinatesY = List.of(coordinateY - neighbourDistance, coordinateY,
+        coordinateY + neighbourDistance);
+    return coordinatesX.stream()
+        .flatMap(x -> coordinatesY.stream().map(y -> new Point(x, y)))
+        .filter(point -> !point.equals(this))
+        .collect(Collectors.toList());
   }
 
   public Integer getCoordinateX() {
