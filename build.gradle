@@ -5,17 +5,40 @@ plugins {
     id 'java'
 }
 
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+
+    testCompile group: 'org.assertj', name: 'assertj-core', version: '3.19.0'
+    testImplementation 'org.junit.jupiter:junit-jupiter-api:5.7.1'
+    testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine'
+}
+
 def configDir = "${project.rootDir}/config"
+
+test {
+    useJUnitPlatform()
+}
 
 checkstyle {
     toolVersion '8.40'
     ignoreFailures = false
     maxWarnings = 0
+    configFile file("${configDir}/checkstyle/checkstyle.xml")
+    configProperties = [ "suppressionFile" :file("${configDir}/checkstyle_suppressions.xml").absolutePath]
+}
+
+pmd {
+    toolVersion = "6.31.0"
+    consoleOutput = true
+    reportsDir = file("${rootProject.buildDir}/reports/${project.name}/pmd")
+    ruleSetFiles = files("${configDir}/pmd/maven-pmd-plugin-default.xml")
+    ruleSets = []
 }
 
 task checkstyle(type: Checkstyle) {
-    configFile file("${configDir}/checkstyle/checkstyle.xml")
-    configProperties = [ "suppressionFile" :file("${configDir}/checkstyle_suppressions.xml").absolutePath]
     source 'src/main/java'
     include '**/*.java'
     exclude '**/gen/**'
@@ -23,15 +46,7 @@ task checkstyle(type: Checkstyle) {
     classpath = files()
 }
 
-pmd {
-    toolVersion = "6.31.0"
-    consoleOutput = true
-    reportsDir = file("${rootProject.buildDir}/reports/${project.name}/pmd")
-}
-
 task pmd (type: Pmd) {
-    ruleSetFiles = files("${configDir}/pmd/maven-pmd-plugin-default.xml")
-    ruleSets = ['java-unusedcode']
     source = fileTree(dir: 'src', include: ['**/*.java'])
 
     reports {
@@ -41,10 +56,3 @@ task pmd (type: Pmd) {
 
     classpath = files()
 }
-
-repositories {
-    mavenCentral()
-}
-
-println pmd.toolVersion
-println checkstyle.toolVersion
