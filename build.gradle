@@ -5,13 +5,34 @@ plugins {
     id 'java'
 }
 
-def configDir = "${project.rootDir}/config"
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+
+    testCompile group: 'org.assertj', name: 'assertj-core', version: '3.19.0'
+    testImplementation 'org.junit.jupiter:junit-jupiter-api:5.7.1'
+    testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine'
+}
+
+test {
+    useJUnitPlatform()
+}
 
 checkstyle {
     toolVersion '8.40'
     ignoreFailures = false
     maxWarnings = 0
 }
+
+pmd {
+    toolVersion = "6.31.0"
+    consoleOutput = true
+    reportsDir = file("${rootProject.buildDir}/reports/${project.name}/pmd")
+}
+
+def configDir = "${project.rootDir}/config"
 
 task checkstyle(type: Checkstyle) {
     configFile file("${configDir}/checkstyle/checkstyle.xml")
@@ -21,12 +42,6 @@ task checkstyle(type: Checkstyle) {
     exclude '**/gen/**'
 
     classpath = files()
-}
-
-pmd {
-    toolVersion = "6.31.0"
-    consoleOutput = true
-    reportsDir = file("${rootProject.buildDir}/reports/${project.name}/pmd")
 }
 
 task pmd (type: Pmd) {
@@ -41,10 +56,3 @@ task pmd (type: Pmd) {
 
     classpath = files()
 }
-
-repositories {
-    mavenCentral()
-}
-
-println pmd.toolVersion
-println checkstyle.toolVersion
