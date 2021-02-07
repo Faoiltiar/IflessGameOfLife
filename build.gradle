@@ -1,0 +1,50 @@
+plugins {
+    id 'base'
+    id 'checkstyle'
+    id 'pmd'
+    id 'java'
+}
+
+def configDir = "${project.rootDir}/config"
+
+checkstyle {
+    toolVersion '8.40'
+    ignoreFailures = false
+    maxWarnings = 0
+}
+
+task checkstyle(type: Checkstyle) {
+    configFile file("${configDir}/checkstyle/checkstyle.xml")
+    configProperties = [ "suppressionFile" :file("${configDir}/checkstyle_suppressions.xml").absolutePath]
+    source 'src/main/java'
+    include '**/*.java'
+    exclude '**/gen/**'
+
+    classpath = files()
+}
+
+pmd {
+    toolVersion = "6.31.0"
+    consoleOutput = true
+    reportsDir = file("${rootProject.buildDir}/reports/${project.name}/pmd")
+}
+
+task pmd (type: Pmd) {
+    ruleSetFiles = files("${configDir}/pmd/maven-pmd-plugin-default.xml")
+    ruleSets = ['java-unusedcode']
+    source = fileTree(dir: 'src', include: ['**/*.java'])
+
+    reports {
+        xml.enabled = true
+        html.enabled = true
+    }
+
+    classpath = files()
+}
+
+repositories {
+    mavenCentral()
+}
+
+println pmd.toolVersion
+println checkstyle.toolVersion
