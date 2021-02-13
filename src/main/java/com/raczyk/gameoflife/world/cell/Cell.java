@@ -19,13 +19,24 @@ public class Cell {
    * Constructs a cell in a certain Point of the world matrix and with given state.
    *
    * @param point Point in the world matrix.
-   * @param currentState Initial state of the cell.
    *
    */
-  public Cell(Point point, State currentState) {
+  public Cell(Point point) {
     this.point = point;
-    this.currentState = currentState;
+    this.currentState = State.UNKNOWN;
     this.futureState = State.UNKNOWN;
+  }
+
+  public void setCurrentState(State currentState) {
+    this.currentState = currentState;
+  }
+
+  public void setFutureState(State futureState) {
+    this.futureState = futureState;
+  }
+
+  public State getFutureState() {
+    return this.futureState;
   }
 
   /**
@@ -42,8 +53,17 @@ public class Cell {
         .collect(Collectors.toList());
   }
 
-  Point getPoint() {
-    return this.point;
+  /**
+   * Method getting the number of cells in neighbour of this cell which are in alive state.
+   *
+   * @return number of living neighbour cells.
+   *
+   */
+  public long getLivingNeighboursNo() {
+
+    return neighbours.stream()
+        .filter(neighbour -> neighbour.currentState.equals(State.LIVING))
+        .count();
   }
 
   @Override
