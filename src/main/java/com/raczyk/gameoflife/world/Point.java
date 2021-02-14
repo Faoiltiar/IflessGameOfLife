@@ -35,14 +35,6 @@ public final class Point {
         .collect(Collectors.toList());
   }
 
-  public Integer getCoordinateX() {
-    return coordinateX;
-  }
-
-  public Integer getCoordinateY() {
-    return coordinateY;
-  }
-
   @Override
   public boolean equals(Object o) {
     if (this == o) {
