@@ -4,6 +4,9 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.InstanceOfAssertFactories.LIST;
 
 import com.raczyk.gameoflife.world.Point;
+import com.raczyk.gameoflife.world.cell.state.AliveCellState;
+import com.raczyk.gameoflife.world.cell.state.DeadCellState;
+import com.raczyk.gameoflife.world.cell.state.UnknownCellState;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -24,7 +27,9 @@ class CellTest {
     IntStream.range(0, WORLD_COLUMN_NO).forEach(coordinateX -> {
           IntStream.range(0, WORLD_ROW_NO).forEach(coordinateY -> {
                 var point = new Point(coordinateX, coordinateY);
-                world.put(point, new Cell(point));
+                var worldCell = new Cell(point);
+                worldCell.setCurrentState(new DeadCellState(worldCell));
+                world.put(point, worldCell);
               }
           );
         }
@@ -241,7 +246,8 @@ class CellTest {
     var cell = world.get(new Point(coordinateX, coordinateY));
     IntStream.range(0, WORLD_COLUMN_NO).forEach(x -> {
           IntStream.range(0, WORLD_ROW_NO).forEach(y -> {
-                world.get(new Point(x, y)).setCurrentState(State.LIVING);
+                var worldCell = world.get(new Point(x, y));
+                worldCell.setCurrentState(new AliveCellState(worldCell));
               }
           );
         }
@@ -261,13 +267,6 @@ class CellTest {
     var coordinateX = WORLD_COLUMN_NO / 2;
     var coordinateY = WORLD_ROW_NO / 2;
     var cell = world.get(new Point(coordinateX, coordinateY));
-    IntStream.range(0, WORLD_COLUMN_NO).forEach(x -> {
-          IntStream.range(0, WORLD_ROW_NO).forEach(y -> {
-                world.get(new Point(x, y)).setCurrentState(State.DEAD);
-              }
-          );
-        }
-    );
     cell.setNeighbours(world);
 
     // When
@@ -283,23 +282,168 @@ class CellTest {
     var coordinateX = WORLD_COLUMN_NO / 2;
     var coordinateY = WORLD_ROW_NO / 2;
     var cell = world.get(new Point(coordinateX, coordinateY));
-    IntStream.range(0, WORLD_COLUMN_NO).forEach(x -> {
-          IntStream.range(0, WORLD_ROW_NO).forEach(y -> {
-                world.get(new Point(x, y)).setCurrentState(State.DEAD);
-              }
-          );
-        }
-    );
     cell.setNeighbours(world);
-    world.get(new Point(coordinateX - 1, coordinateY - 1)).setCurrentState(State.LIVING);
-    world.get(new Point(coordinateX - 1, coordinateY)).setCurrentState(State.LIVING);
-    world.get(new Point(coordinateX, coordinateY - 1)).setCurrentState(State.LIVING);
 
+    var firstNeighbour = world.get(new Point(coordinateX - 1, coordinateY - 1));
+    firstNeighbour.setCurrentState(new AliveCellState(firstNeighbour));
+    var secondNeighbour = world.get(new Point(coordinateX - 1, coordinateY));
+    secondNeighbour.setCurrentState(new AliveCellState(firstNeighbour));
+    var thirdNeighbour = world.get(new Point(coordinateX, coordinateY - 1));
+    thirdNeighbour.setCurrentState(new AliveCellState(firstNeighbour));
 
     // When
     var livingNeighbours = cell.getLivingNeighboursNo();
 
     // Then
     assertThat(livingNeighbours).isEqualTo(3);
+  }
+
+  @Test
+  void setNextGeneration_UnknownCellCurrentState_UnknownCellStateAsFutureState() {
+    // Given
+    var coordinateX = WORLD_COLUMN_NO / 2;
+    var coordinateY = WORLD_ROW_NO / 2;
+    var cell = world.get(new Point(coordinateX, coordinateY));
+    cell.setCurrentState(new UnknownCellState(cell));
+    cell.setNeighbours(world);
+
+    // When
+    cell.setNextGeneration();
+
+    // Then
+    assertThat(cell).extracting("futureState").isNotNull()
+        .isEqualTo(new UnknownCellState(cell));
+  }
+
+  @Test
+  void setNextGeneration_DeadCellInReproductionSubEnvironment_AliveCellStateAsFutureState() {
+    // Given
+    var coordinateX = WORLD_COLUMN_NO / 2;
+    var coordinateY = WORLD_ROW_NO / 2;
+    var cell = world.get(new Point(coordinateX, coordinateY));
+    cell.setNeighbours(world);
+
+    var firstNeighbour = world.get(new Point(coordinateX - 1, coordinateY - 1));
+    firstNeighbour.setCurrentState(new AliveCellState(firstNeighbour));
+    var secondNeighbour = world.get(new Point(coordinateX - 1, coordinateY));
+    secondNeighbour.setCurrentState(new AliveCellState(firstNeighbour));
+    var thirdNeighbour = world.get(new Point(coordinateX, coordinateY - 1));
+    thirdNeighbour.setCurrentState(new AliveCellState(firstNeighbour));
+
+    // When
+    cell.setNextGeneration();
+
+    // Then
+    assertThat(cell).extracting("futureState").isNotNull()
+        .isEqualTo(new AliveCellState(cell));
+  }
+
+  @Test
+  void setNextGeneration_DeadCellInNormalSubEnvironment_DeadCellStateAsFutureState() {
+    // Given
+    var coordinateX = WORLD_COLUMN_NO / 2;
+    var coordinateY = WORLD_ROW_NO / 2;
+    var cell = world.get(new Point(coordinateX, coordinateY));
+    cell.setNeighbours(world);
+
+    var firstNeighbour = world.get(new Point(coordinateX - 1, coordinateY - 1));
+    firstNeighbour.setCurrentState(new AliveCellState(firstNeighbour));
+
+    // When
+    cell.setNextGeneration();
+
+    // Then
+    assertThat(cell).extracting("futureState").isNotNull()
+        .isEqualTo(new DeadCellState(cell));
+  }
+
+  @Test
+  void setNextGeneration_AliveCellInOverpopulationSubEnvironment_DeadCellStateAsFutureState() {
+    // Given
+    var coordinateX = WORLD_COLUMN_NO / 2;
+    var coordinateY = WORLD_ROW_NO / 2;
+    var cell = world.get(new Point(coordinateX, coordinateY));
+    cell.setCurrentState(new AliveCellState(cell));
+    cell.setNeighbours(world);
+
+    var firstNeighbour = world.get(new Point(coordinateX - 1, coordinateY - 1));
+    firstNeighbour.setCurrentState(new AliveCellState(firstNeighbour));
+    var secondNeighbour = world.get(new Point(coordinateX - 1, coordinateY));
+    secondNeighbour.setCurrentState(new AliveCellState(firstNeighbour));
+    var thirdNeighbour = world.get(new Point(coordinateX, coordinateY - 1));
+    thirdNeighbour.setCurrentState(new AliveCellState(firstNeighbour));
+    var fourthNeighbour =  world.get(new Point(coordinateX + 1, coordinateY));
+    fourthNeighbour.setCurrentState(new AliveCellState(firstNeighbour));
+    var fifthNeighbour = world.get(new Point(coordinateX + 1, coordinateY + 1));
+    fifthNeighbour.setCurrentState(new AliveCellState(firstNeighbour));
+
+    // When
+    cell.setNextGeneration();
+
+    // Then
+    assertThat(cell).extracting("futureState").isNotNull()
+        .isEqualTo(new DeadCellState(cell));
+  }
+
+  @Test
+  void setNextGeneration_AliveCellInUnderpopulationSubEnvironment_DeadCellStateAsFutureState() {
+    // Given
+    var coordinateX = WORLD_COLUMN_NO / 2;
+    var coordinateY = WORLD_ROW_NO / 2;
+    var cell = world.get(new Point(coordinateX, coordinateY));
+    cell.setCurrentState(new AliveCellState(cell));
+    cell.setNeighbours(world);
+
+    var firstNeighbour = world.get(new Point(coordinateX - 1, coordinateY - 1));
+    firstNeighbour.setCurrentState(new AliveCellState(firstNeighbour));
+
+    // When
+    cell.setNextGeneration();
+
+    // Then
+    assertThat(cell).extracting("futureState").isNotNull()
+        .isEqualTo(new DeadCellState(cell));
+  }
+
+  @Test
+  void setNextGeneration_AliveCellInNormalSubEnvironment_AliveCellStateAsFutureState() {
+    // Given
+    var coordinateX = WORLD_COLUMN_NO / 2;
+    var coordinateY = WORLD_ROW_NO / 2;
+    var cell = world.get(new Point(coordinateX, coordinateY));
+    cell.setCurrentState(new AliveCellState(cell));
+    cell.setNeighbours(world);
+
+    var firstNeighbour = world.get(new Point(coordinateX - 1, coordinateY - 1));
+    firstNeighbour.setCurrentState(new AliveCellState(firstNeighbour));
+    var secondNeighbour = world.get(new Point(coordinateX - 1, coordinateY));
+    secondNeighbour.setCurrentState(new AliveCellState(firstNeighbour));
+
+    // When
+    cell.setNextGeneration();
+
+    // Then
+    assertThat(cell).extracting("futureState").isNotNull()
+        .isEqualTo(new AliveCellState(cell));
+  }
+
+  @Test
+  void evolve_GivenCurrentAndFutureState_CurrentStateSetToPrevFutureStateAndFutureSetToUnknown() {
+    // Given
+    var coordinateX = WORLD_COLUMN_NO / 2;
+    var coordinateY = WORLD_ROW_NO / 2;
+    var cell = world.get(new Point(coordinateX, coordinateY));
+    cell.setCurrentState(new AliveCellState(cell));
+    cell.setNextGeneration(); // set future cell state to DeadCellState
+    cell.setNeighbours(world);
+
+    // When
+    cell.evolve();
+
+    // Then
+    assertThat(cell).extracting("currentState").isNotNull()
+        .isEqualTo(new DeadCellState(cell));
+    assertThat(cell).extracting("futureState").isNotNull()
+        .isEqualTo(new UnknownCellState(cell));
   }
 }

@@ -1,6 +1,10 @@
 package com.raczyk.gameoflife.world.cell;
 
 import com.raczyk.gameoflife.world.Point;
+import com.raczyk.gameoflife.world.cell.state.AliveCellState;
+import com.raczyk.gameoflife.world.cell.state.CellState;
+import com.raczyk.gameoflife.world.cell.state.UnknownCellState;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -11,8 +15,8 @@ import java.util.stream.Collectors;
  */
 public class Cell {
   private final Point point;
-  private State currentState;
-  private State futureState;
+  private CellState currentState;
+  private CellState futureState;
   private List<Cell> neighbours;
 
   /**
@@ -23,20 +27,13 @@ public class Cell {
    */
   public Cell(Point point) {
     this.point = point;
-    this.currentState = State.UNKNOWN;
-    this.futureState = State.UNKNOWN;
+    this.currentState = new UnknownCellState(this);
+    this.futureState = new UnknownCellState(this);
+    this.neighbours = new ArrayList<>();
   }
 
-  public void setCurrentState(State currentState) {
+  void setCurrentState(CellState currentState) {
     this.currentState = currentState;
-  }
-
-  public void setFutureState(State futureState) {
-    this.futureState = futureState;
-  }
-
-  public State getFutureState() {
-    return this.futureState;
   }
 
   /**
@@ -45,7 +42,7 @@ public class Cell {
    * @param world Map representing Points in the world matrix and corresponding cells.
    *
    */
-  public void setNeighbours(Map<Point, Cell> world) {
+  void setNeighbours(Map<Point, Cell> world) {
     var neighbourPoints = point.getNeighbourPoints();
     this.neighbours = world.entrySet().stream()
         .filter(pointCellEntry -> neighbourPoints.contains(pointCellEntry.getKey()))
@@ -60,10 +57,25 @@ public class Cell {
    *
    */
   public long getLivingNeighboursNo() {
-
     return neighbours.stream()
-        .filter(neighbour -> neighbour.currentState.equals(State.LIVING))
+        .filter(neighbour -> neighbour.currentState instanceof AliveCellState)
         .count();
+  }
+
+  /**
+   * Method setting future state of a cell.
+   */
+  void setNextGeneration() {
+    this.futureState = currentState.determineFutureState();
+  }
+
+  /**
+   * Method which evolves cell into next generation.
+   * It changes the current state of a cell with a future state.
+   */
+  void evolve() {
+    currentState = futureState;
+    futureState = new UnknownCellState(this);
   }
 
   @Override
@@ -75,11 +87,11 @@ public class Cell {
       return false;
     }
     Cell cell = (Cell) o;
-    return point.equals(cell.point) && currentState == cell.currentState;
+    return point.equals(cell.point);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(point, currentState);
+    return Objects.hash(point);
   }
 }
