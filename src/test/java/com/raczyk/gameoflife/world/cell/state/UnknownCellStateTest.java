@@ -19,7 +19,7 @@ class UnknownCellStateTest {
   }
 
   @Test
-  void changeState_UnknownCellWithGivenCell_CellFutureStateSetToTheSameUnknownState() {
+  void changeState_UnknownCellState_CellFutureStateSetToTheSameUnknownState() {
     // When
     var futureCellState = unknownCellState.determineFutureState();
 

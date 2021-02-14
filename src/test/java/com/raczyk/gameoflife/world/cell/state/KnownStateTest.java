@@ -59,7 +59,7 @@ class KnownStateTest {
   }
 
   @Test
-  void getFutureState_LivingNumberOfNeighboursMatchesAliveCellState_AliveCellState() {
+  void getFutureState_NumberOfLivingNeighboursMatchesAliveCellState_AliveCellState() {
     // Given
     when(cell.getLivingNeighboursNo()).thenReturn(2L);
     Map<List<Long>, Supplier<CellState>> environmentStateRuleMap =
@@ -74,7 +74,7 @@ class KnownStateTest {
   }
 
   @Test
-  void getFutureState_LivingNumberOfNeighboursMatchesDeadCellState_DeadCellState() {
+  void getFutureState_NumberOfLivingNeighboursMatchesDeadCellState_DeadCellState() {
     // Given
     when(cell.getLivingNeighboursNo()).thenReturn(7L);
     Map<List<Long>, Supplier<CellState>> environmentStateRuleMap =
