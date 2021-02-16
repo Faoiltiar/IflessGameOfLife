@@ -44,6 +44,11 @@ public final class AliveCellState extends KnownState {
   }
 
   @Override
+  public String display() {
+    return "X";
+  }
+
+  @Override
   public boolean equals(Object o) {
     if (this == o) {
       return true;

@@ -41,6 +41,11 @@ public final class DeadCellState extends KnownState {
   }
 
   @Override
+  public String display() {
+    return " ";
+  }
+
+  @Override
   public boolean equals(Object o) {
     if (this == o) {
       return true;

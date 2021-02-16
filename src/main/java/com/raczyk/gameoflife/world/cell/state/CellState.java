@@ -10,4 +10,11 @@ public interface CellState {
    * Method responsible for evaluating the future state of a cell.
    */
   CellState determineFutureState();
+
+  /**
+   * Method responsible for returning a String representing cell state.
+   *
+   * @return String object which represents state.
+   */
+  String display();
 }

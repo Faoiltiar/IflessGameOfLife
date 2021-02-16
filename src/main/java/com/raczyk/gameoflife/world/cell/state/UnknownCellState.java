@@ -28,6 +28,11 @@ public final class UnknownCellState implements CellState {
   }
 
   @Override
+  public String display() {
+    return "?";
+  }
+
+  @Override
   public boolean equals(Object o) {
     if (this == o) {
       return true;
