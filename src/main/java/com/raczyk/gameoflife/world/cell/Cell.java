@@ -32,7 +32,7 @@ public class Cell {
     this.neighbours = new ArrayList<>();
   }
 
-  void setCurrentState(CellState currentState) {
+  public void setCurrentState(CellState currentState) {
     this.currentState = currentState;
   }
 
@@ -42,7 +42,7 @@ public class Cell {
    * @param world Map representing Points in the world matrix and corresponding cells.
    *
    */
-  void setNeighbours(Map<Point, Cell> world) {
+  public void setNeighbours(Map<Point, Cell> world) {
     var neighbourPoints = point.getNeighbourPoints();
     this.neighbours = world.entrySet().stream()
         .filter(pointCellEntry -> neighbourPoints.contains(pointCellEntry.getKey()))
@@ -65,7 +65,7 @@ public class Cell {
   /**
    * Method setting future state of a cell.
    */
-  void setNextGeneration() {
+  public void setNextGeneration() {
     this.futureState = currentState.determineFutureState();
   }
 
@@ -73,9 +73,13 @@ public class Cell {
    * Method which evolves cell into next generation.
    * It changes the current state of a cell with a future state.
    */
-  void evolve() {
+  public void evolve() {
     currentState = futureState;
     futureState = new UnknownCellState(this);
+  }
+
+  public String display() {
+    return currentState.display();
   }
 
   @Override

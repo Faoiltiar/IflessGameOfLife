@@ -46,4 +46,13 @@ class DeadCellStateTest {
     // Then
     assertThat(futureCellState).isEqualTo(new DeadCellState(cell));
   }
+
+  @Test
+  void display_DeadCellState_ProperStateRepresentation() {
+    // When
+    var stateDisplayed = deadCellState.display();
+
+    // Then
+    assertThat(stateDisplayed).isEqualTo(" ");
+  }
 }

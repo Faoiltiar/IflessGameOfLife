@@ -58,4 +58,13 @@ class AliveCellStateTest {
     // Then
     assertThat(futureCellState).isEqualTo(new AliveCellState(cell));
   }
+
+  @Test
+  void display_AliveCellState_ProperStateRepresentation() {
+    // When
+    var stateDisplayed = aliveCellState.display();
+
+    // Then
+    assertThat(stateDisplayed).isEqualTo("X");
+  }
 }
