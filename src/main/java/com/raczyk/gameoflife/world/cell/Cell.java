@@ -78,6 +78,12 @@ public class Cell {
     futureState = new UnknownCellState(this);
   }
 
+  /**
+   * Method responsible for returning a String representing cell state.
+   *
+   * @return String object which represents state.
+   *
+   */
   public String display() {
     return currentState.display();
   }
@@ -91,7 +97,10 @@ public class Cell {
       return false;
     }
     Cell cell = (Cell) o;
-    return point.equals(cell.point);
+    return Objects.equals(point, cell.point)
+        && Objects.equals(currentState.getState(), cell.currentState.getState())
+        && Objects.equals(futureState.getState(), cell.futureState.getState())
+        && Objects.equals(neighbours.size(), cell.neighbours.size());
   }
 
   @Override

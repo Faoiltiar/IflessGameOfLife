@@ -470,7 +470,7 @@ class CellTest {
     var stateDisplayed = cell.display();
 
     // Then
-    assertThat(stateDisplayed).isEqualTo(" ");
+    assertThat(stateDisplayed).isEqualTo("#");
   }
 
   @Test
