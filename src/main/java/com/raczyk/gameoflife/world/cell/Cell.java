@@ -36,6 +36,10 @@ public class Cell {
     this.currentState = currentState;
   }
 
+  public void setFutureState(CellState futureState) {
+    this.futureState = futureState;
+  }
+
   /**
    * Method setting the list of neighbour cells base on cell's point.
    *
