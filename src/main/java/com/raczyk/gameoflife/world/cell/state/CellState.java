@@ -18,5 +18,10 @@ public interface CellState {
    */
   String display();
 
+  /**
+   * Method returning State enum representation of cell state.
+   *
+   * @return State enum representation of cell state.
+   */
   State getState();
 }
