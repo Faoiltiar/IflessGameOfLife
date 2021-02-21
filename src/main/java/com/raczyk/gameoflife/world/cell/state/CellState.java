@@ -17,4 +17,6 @@ public interface CellState {
    * @return String object which represents state.
    */
   String display();
+
+  State getState();
 }

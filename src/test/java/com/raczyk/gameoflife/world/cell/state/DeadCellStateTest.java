@@ -53,6 +53,15 @@ class DeadCellStateTest {
     var stateDisplayed = deadCellState.display();
 
     // Then
-    assertThat(stateDisplayed).isEqualTo(" ");
+    assertThat(stateDisplayed).isEqualTo("#");
+  }
+
+  @Test
+  void getState_DeadCellState_DeadState() {
+    // When
+    var state = deadCellState.getState();
+
+    // Then
+    assertThat(state).isEqualTo(State.DEAD);
   }
 }

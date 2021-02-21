@@ -67,4 +67,13 @@ class AliveCellStateTest {
     // Then
     assertThat(stateDisplayed).isEqualTo("X");
   }
+
+  @Test
+  void getState_AliveCellState_AliveState() {
+    // When
+    var state = aliveCellState.getState();
+
+    // Then
+    assertThat(state).isEqualTo(State.ALIVE);
+  }
 }

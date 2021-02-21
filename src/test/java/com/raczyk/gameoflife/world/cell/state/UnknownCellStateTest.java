@@ -35,4 +35,13 @@ class UnknownCellStateTest {
     // Then
     assertThat(stateDisplayed).isEqualTo("?");
   }
+
+  @Test
+  void getState_UnknownCellState_UnknownState() {
+    // When
+    var state = unknownCellState.getState();
+
+    // Then
+    assertThat(state).isEqualTo(State.UNKNOWN);
+  }
 }

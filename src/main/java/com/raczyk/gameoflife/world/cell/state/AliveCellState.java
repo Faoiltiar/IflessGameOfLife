@@ -23,6 +23,7 @@ public final class AliveCellState extends KnownState {
 
   private final Cell cell;
   private final Map<List<Long>, Supplier<CellState>> environmentStateRuleMap;
+  private final State state;
 
   /**
    * Initializes a newly created AliveCellState object so that it represents
@@ -36,6 +37,7 @@ public final class AliveCellState extends KnownState {
     this.environmentStateRuleMap = Map.of(NORMAL, () -> createAliveCellState(cell),
         UNDERPOPULATION, () -> createDeadCellState(cell),
         OVERPOPULATION, () -> createDeadCellState(cell));
+    this.state = State.ALIVE;
   }
 
   @Override
@@ -45,7 +47,12 @@ public final class AliveCellState extends KnownState {
 
   @Override
   public String display() {
-    return "X";
+    return state.getRepresentation();
+  }
+
+  @Override
+  public State getState() {
+    return state;
   }
 
   @Override
