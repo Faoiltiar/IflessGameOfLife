@@ -75,8 +75,6 @@ class WorldTest {
     assertThat(worldMap).isNotEmpty()
         .hasSize(WORLD_SIZE)
         .containsExactlyInAnyOrderEntriesOf(expectedWorld);
-
-
   }
 
   @Test
