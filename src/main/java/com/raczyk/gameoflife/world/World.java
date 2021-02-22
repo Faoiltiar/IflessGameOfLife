@@ -54,14 +54,7 @@ public class World {
   }
 
   private void registerNeighbour() {
-    IntStream.range(0, maxColumnNo)
-        .forEach(coordinateX -> IntStream.range(0, maxRowNo)
-            .forEach(coordinateY -> {
-                  var worldCell = worldMatrix.get(new Point(coordinateX, coordinateY));
-                  worldCell.setNeighbours(worldMatrix);
-                }
-            )
-        );
+    worldMatrix.values().forEach(cell -> cell.setNeighbours(worldMatrix));
   }
 
   /**
@@ -69,14 +62,7 @@ public class World {
    * for each cell in world matrix.
    */
   public void setNextGeneration() {
-    IntStream.range(0, maxColumnNo)
-        .forEach(coordinateX -> IntStream.range(0, maxRowNo)
-            .forEach(coordinateY -> {
-                  var worldCell = worldMatrix.get(new Point(coordinateX, coordinateY));
-                  worldCell.setNextGeneration();
-                }
-            )
-        );
+    worldMatrix.values().forEach(Cell::setNextGeneration);
   }
 
   /**
@@ -84,14 +70,7 @@ public class World {
    * It does that by changing current state of each cell to the future state.
    */
   public void evolveToNextGeneration() {
-    IntStream.range(0, maxColumnNo)
-        .forEach(coordinateX -> IntStream.range(0, maxRowNo)
-            .forEach(coordinateY -> {
-                  var worldCell = worldMatrix.get(new Point(coordinateX, coordinateY));
-                  worldCell.evolve();
-                }
-            )
-        );
+    worldMatrix.values().forEach(Cell::evolve);
   }
 
   /**
