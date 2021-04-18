@@ -10,6 +10,7 @@ import java.util.Objects;
 public final class UnknownCellState implements CellState {
 
   private final Cell cell;
+  private final State state;
 
   /**
    * Initializes a newly created UnknownCellState object so that it represents
@@ -20,11 +21,22 @@ public final class UnknownCellState implements CellState {
    */
   public UnknownCellState(Cell cell) {
     this.cell = cell;
+    this.state = State.UNKNOWN;
   }
 
   @Override
   public CellState determineFutureState() {
     return this;
+  }
+
+  @Override
+  public String display() {
+    return state.getRepresentation();
+  }
+
+  @Override
+  public State getState() {
+    return this.state;
   }
 
   @Override

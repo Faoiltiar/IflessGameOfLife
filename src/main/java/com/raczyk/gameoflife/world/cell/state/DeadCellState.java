@@ -21,6 +21,7 @@ public final class DeadCellState extends KnownState {
 
   private final Cell cell;
   private final Map<List<Long>, Supplier<CellState>> environmentStateRuleMap;
+  private final State state;
 
   /**
    * Initializes a newly created DeadCellState object so that it represents
@@ -33,11 +34,22 @@ public final class DeadCellState extends KnownState {
     this.cell = cell;
     this.environmentStateRuleMap = Map.of(REPRODUCTION, () -> createAliveCellState(cell),
         NORMAL, () -> createDeadCellState(cell));
+    this.state = State.DEAD;
   }
 
   @Override
   public CellState determineFutureState() {
     return getFutureState(this.cell, this.environmentStateRuleMap);
+  }
+
+  @Override
+  public String display() {
+    return state.getRepresentation();
+  }
+
+  @Override
+  public State getState() {
+    return this.state;
   }
 
   @Override

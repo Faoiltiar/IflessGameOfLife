@@ -26,4 +26,22 @@ class UnknownCellStateTest {
     // Then
     assertThat(futureCellState).isEqualTo(unknownCellState);
   }
+
+  @Test
+  void display_UnknownCellState_ProperStateRepresentation() {
+    // When
+    var stateDisplayed = unknownCellState.display();
+
+    // Then
+    assertThat(stateDisplayed).isEqualTo("?");
+  }
+
+  @Test
+  void getState_UnknownCellState_UnknownState() {
+    // When
+    var state = unknownCellState.getState();
+
+    // Then
+    assertThat(state).isEqualTo(State.UNKNOWN);
+  }
 }

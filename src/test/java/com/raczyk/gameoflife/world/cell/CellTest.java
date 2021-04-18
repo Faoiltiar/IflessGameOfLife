@@ -446,4 +446,43 @@ class CellTest {
     assertThat(cell).extracting("futureState").isNotNull()
         .isEqualTo(new UnknownCellState(cell));
   }
+
+  @Test
+  void display_CellWithAliveState_ProperStateRepresentation() {
+    // Given
+    var cell = new Cell(new Point(0, 0));
+    cell.setCurrentState(new AliveCellState(cell));
+
+    // When
+    var stateDisplayed = cell.display();
+
+    // Then
+    assertThat(stateDisplayed).isEqualTo("X");
+  }
+
+  @Test
+  void display_CellWithDeadState_ProperStateRepresentation() {
+    // Given
+    var cell = new Cell(new Point(0, 0));
+    cell.setCurrentState(new DeadCellState(cell));
+
+    // When
+    var stateDisplayed = cell.display();
+
+    // Then
+    assertThat(stateDisplayed).isEqualTo("#");
+  }
+
+  @Test
+  void display_CellWithUnknownState_ProperStateRepresentation() {
+    // Given
+    var cell = new Cell(new Point(0, 0));
+    cell.setCurrentState(new UnknownCellState(cell));
+
+    // When
+    var stateDisplayed = cell.display();
+
+    // Then
+    assertThat(stateDisplayed).isEqualTo("?");
+  }
 }
